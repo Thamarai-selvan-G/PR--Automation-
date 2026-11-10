@@ -41,9 +41,7 @@ jq -n --argjson users "${USERS:-"{}"}" --argjson reviewers "$reviewers" \
            text: "\($heading) #\($pr.number) → \($pr.base.ref): \($pr.title)"},
           {type: "TextBlock", wrap: true, text: "**Raised by:** \($author.text)"},
           {type: "TextBlock", wrap: true,
-           text: "**Reviewers:** \(if ($revs | length) > 0 then ($revs | map(.text) | join(", ")) else "none assigned" end)"},
-          {type: "TextBlock", wrap: true,
-           text: "**Changes:** \($pr.changed_files) files (+\($pr.additions) / -\($pr.deletions))"}
+           text: "**Reviewers:** \(if ($revs | length) > 0 then ($revs | map(.text) | join(", ")) else "none assigned" end)"}
         ] + (if ($pr.body // "") != "" then [{type: "TextBlock", wrap: true, text: ($pr.body | .[0:500])}] else [] end)),
         actions: [{type: "Action.OpenUrl", title: "Open PR", url: $pr.html_url}],
         msteams: {width: "Full",
