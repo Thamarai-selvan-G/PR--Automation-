@@ -1,0 +1,22 @@
+name: PR Teams notify
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [opened, ready_for_review, review_requested]
+
+jobs:
+  notify:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Post to Teams
+        env:
+          WEBHOOK: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          USERS: ${{ vars.TEAMS_USERS || '{}' }}
+        run: |
+          bash .github/scripts/build-card.sh "$GITHUB_EVENT_PATH" > payload.json
+          if [ -s payload.json ]; then
+            curl -sS --fail-with-body -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
+          fi
